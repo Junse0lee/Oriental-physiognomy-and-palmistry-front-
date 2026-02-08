@@ -1,54 +1,148 @@
 "use client";
 
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
 
 interface Props {
   onBack: () => void;
 }
 
 export default function HandAnalysis({ onBack }: Props) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  
+  const [stream, setStream] = useState<MediaStream | null>(null);
+  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+
+  // 1. 실시간 카메라 시작 함수
+  const startCamera = async () => {
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: { 
+          facingMode: "environment", // 후면 카메라 우선
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        },
+        audio: false,
+      });
+
+      setStream(mediaStream);
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream;
+      }
+    } catch (err) {
+      console.error("카메라 접근 에러:", err);
+      alert("카메라 권한을 허용해주셔야 촬영이 가능합니다.");
+    }
+  };
+
+  // 컴포넌트 마운트 시 최초 1회 카메라 켜기
+  useEffect(() => {
+    startCamera();
+    
+    // 컴포넌트 언마운트 시(페이지 이동 등) 카메라 완전 종료
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, []);
+
+  // 2. 촬영 버튼: 사진 찍고 '카메라 끄기'
+  const handleCapture = () => {
+    if (!videoRef.current || !canvasRef.current || !stream) return;
+
+    const canvas = canvasRef.current;
+    const video = videoRef.current;
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext("2d");
+    
+    if (ctx) {
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL("image/png");
+      setCapturedImage(dataUrl); 
+
+      // ✅ [카메라 하드웨어 종료] 
+      // 모든 비디오 트랙을 중지시켜서 카메라 렌즈 옆의 불빛을 끕니다.
+      stream.getTracks().forEach(track => {
+        track.stop();
+      });
+      setStream(null); // 상태 초기화
+    }
+  };
+
+  // 3. 다시 찍기: 저장된 이미지를 지우고 '카메라 다시 켜기'
+  const handleRetry = () => {
+    setCapturedImage(null);
+    startCamera(); // 꺼졌던 카메라를 다시 활성화
+  };
+
   return (
-    <div className="w-full h-full flex flex-col items-center animate-in fade-in duration-500">
-      
-      {/* 1. 상단 보라색 구분선 (이미지 상단 라인) */}
+    <div className="w-full h-full flex flex-col items-center bg-[#1A1A1A]">
       <div className="w-full h-[1px] bg-purple-500/50 mb-6" />
 
-      {/* 2. 촬영 안내 영역 (회색 박스) */}
-      <div className="w-full aspect-[3/4] bg-[#D9D9D9] rounded-lg flex items-center justify-center px-10 text-center">
-        <p className="text-[#8E8E8E] text-2xl font-bold leading-relaxed">
-          촬영을 위해 손바닥이 보이게<br />사진을 찍어주세요
-        </p>
+      {/* 카메라 프리뷰 / 결과 이미지 영역 */}
+      <div className="relative w-full aspect-[3/4] bg-black rounded-lg overflow-hidden border-2 border-purple-500/30">
+        {!capturedImage ? (
+          <>
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              className="w-full h-full object-cover"
+            />
+            {/* 가이드 라인 */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+               <div className="w-64 h-80 border-2 border-dashed border-white/50 rounded-[100px] flex items-center justify-center">
+                  <p className="text-white text-sm bg-black/40 px-4 py-2 rounded-full">
+                    손바닥을 중앙에 맞춰주세요
+                  </p>
+               </div>
+            </div>
+          </>
+        ) : (
+          <img src={capturedImage} className="w-full h-full object-cover" alt="Captured" />
+        )}
       </div>
 
-      {/* 3. 하단 버튼 영역 */}
-      <div className="w-full mt-auto mb-10">
-        <div className="flex justify-around items-end px-4">
+      <canvas ref={canvasRef} className="hidden" />
+
+      <div className="w-full mt-auto mb-10 px-6">
+        <div className="flex justify-around items-center px-10">
           
-          {/* 촬영 버튼 */}
-          <div className="flex flex-col items-center space-y-3">
-            <button className="w-16 h-16 bg-[#E2C37B] rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-transform">
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
+          {/* 촬영/다시찍기 버튼 컨트롤 */}
+          <div className="flex flex-col items-center gap-2">
+            <button 
+              onClick={capturedImage ? handleRetry : handleCapture}
+              className="w-16 h-16 bg-[#E2C37B] rounded-full flex items-center justify-center shadow-xl active:scale-95 transition-all"
+            >
+              {capturedImage ? (
+                <span className="text-white font-bold text-sm text-center">다시<br/>켜기</span>
+              ) : (
+                <div className="w-8 h-8 rounded-full border-4 border-white" />
+              )}
             </button>
-            <span className="text-sm text-gray-300">촬영</span>
+            <span className="text-xs text-gray-400">{capturedImage ? "재촬영" : "셔터"}</span>
           </div>
 
-          {/* 결과 확인 버튼 */}
-          <div className="flex flex-col items-center space-y-3">
-            <button className="w-16 h-16 bg-[#E2C37B] rounded-full flex flex-col items-center justify-center shadow-lg active:scale-90 transition-transform">
-              <span className="text-white text-xl font-bold">?</span>
-              <span className="text-white text-[10px] font-bold leading-tight">결과 확인</span>
+          {/* AI 분석 결과 확인 버튼 */}
+          <div className="flex flex-col items-center gap-2">
+            <button 
+              disabled={!capturedImage}
+              className={`w-16 h-16 rounded-full flex items-center justify-center shadow-xl transition-all ${capturedImage ? 'bg-purple-600' : 'bg-gray-700 opacity-50'}`}
+              onClick={() => alert("AI 분석을 요청합니다!")}
+            >
+              <span className="text-white font-bold text-sm">결과 확인</span>
             </button>
-            <span className="text-sm text-gray-300">결과 확인</span>
+            <span className="text-xs text-gray-400">분석하기</span>
           </div>
-          
+
         </div>
 
-        {/* 하단 보라색 구분선 및 뒤로가기 (선택사항) */}
-        <div className="w-full h-[1px] bg-purple-500/50 mt-8 mb-4" />
-        <button onClick={onBack} className="text-xs text-gray-500 underline w-full text-center">
+        <button onClick={onBack} className="mt-8 text-xs text-gray-500 underline w-full text-center">
           이전으로 돌아가기
         </button>
       </div>
