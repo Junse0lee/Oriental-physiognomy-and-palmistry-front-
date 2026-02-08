@@ -44,7 +44,7 @@ export default function Choose_Hand_Face({ onNext, onHandNext }: Props) {
 
       {/* 3. 카드 버튼 영역 (손금의 비밀) */}
       <button 
-        onClick={onHandNext}  // 이제 에러 없이 작동합니다!
+        onClick={onHandNext} 
         className="w-full max-w-sm bg-[#25253D]/50 border border-white/5 p-6 rounded-[30px] flex items-center space-x-6 hover:bg-[#25253D] transition-all group active:scale-95"
       >
         <div className="w-24 h-24 flex-none grayscale group-hover:grayscale-0 transition-all text-5xl flex items-center justify-center">
