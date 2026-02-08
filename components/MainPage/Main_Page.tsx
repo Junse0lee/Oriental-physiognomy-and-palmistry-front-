@@ -4,17 +4,18 @@ import React, { useState } from "react";
 
 interface Props {
   onNext: () => void;
+  userName: string;
+  setUserName: (name: string) => void;
 }
 
-export default function MainPage({ onNext }: Props) {
+export default function MainPage({ onNext, userName, setUserName }: Props) {
   const [gender, setGender] = useState<"male" | "female" | null>(null);
-  const [name, setName] = useState("");
   const [birth, setBirth] = useState("");
 
   return (
     /* h-full과 flex-col로 전체 높이를 제어합니다. */
     <div className="w-full h-full flex flex-col items-center">
-      
+
       {/* 1. 성별 선택 영역 (상단 고정) */}
       <div className="w-full flex justify-between px-[72px] mt-[26px] flex-none">
         <div className="flex flex-col items-center space-y-2">
@@ -46,8 +47,8 @@ export default function MainPage({ onNext }: Props) {
           <label className="text-[#E2C37B] font-medium shrink-0 w-20">이름 :</label>
           <input
             type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)} // 부모의 상태를 바꿈
             placeholder="이름 입력"
             className="w-full bg-transparent border-b border-[#E2C37B] py-1 outline-none text-white focus:border-white transition-colors"
           />
@@ -75,11 +76,11 @@ export default function MainPage({ onNext }: Props) {
       {/* 4. 시작하기 버튼 (하단 고정 및 동반 상승) */}
       <div className="w-full px-[72px] pb-10 flex-none">
         <button
-          disabled={!gender || !name || !birth}
+          disabled={!gender || !userName || !birth}
           onClick={onNext}
           className={`w-full py-4 rounded-full font-bold text-lg transition-all
-            ${gender && name && birth 
-              ? "bg-[#E2C37B] text-black shadow-[0_0_15px_rgba(226,195,123,0.3)]" 
+            ${gender && userName && birth
+              ? "bg-[#E2C37B] text-black shadow-[0_0_15px_rgba(226,195,123,0.3)]"
               : "bg-gray-700 text-gray-500 cursor-not-allowed"}`}
         >
           시작하기

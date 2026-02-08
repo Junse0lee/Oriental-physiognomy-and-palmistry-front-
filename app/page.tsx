@@ -12,6 +12,8 @@ type SceneType = "LOGIN" | "INFO" | "CHOOSE" | "HAND_ANALYSIS";
 export default function Home() {
   const [scene, setScene] = useState<SceneType>("LOGIN");
 
+  const [userName, setUserName] = useState("");
+
   // 뒤로 가기 버튼 로직
   const handleBack = () => {
     if (scene === "INFO") setScene("LOGIN");
@@ -64,7 +66,11 @@ export default function Home() {
         )}
 
         {/* scene 1: 정보 입력 */}
-        {scene === "INFO" && <MainPage onNext={() => setScene("CHOOSE")} />}
+        {scene === "INFO" && (
+          <MainPage onNext={() => setScene("CHOOSE")}
+            userName={userName} //저장된 이름 전달
+            setUserName={setUserName} //이름을 바꾸는 함수를 전달
+          />)}
 
         {/* scene 2: 관상/손금 선택 */}
         {scene === "CHOOSE" && (
