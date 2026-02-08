@@ -1,5 +1,6 @@
 // 1. [Include 단계] 필요한 도구 가져오기
 import React from "react";
+import PrimaryButton from "@/components/For_design/Common/PrimaryButton";
 
 // 2. [Interface 단계] 이 방(컴포넌트)을 쓰기 위해 필요한 규칙 정의
 interface Props {
@@ -21,13 +22,7 @@ export default function Main_Login_Form({ onNext }: Props) {
       </div>
 
       {/* 5. [Event 단계] 클릭 시 다음 장면으로 넘겨주는 버튼 */}
-      <button 
-        onClick={onNext} // 부모(page.tsx)가 준 함수를 실행!
-        className="px-10 py-4 bg-[#E2C37B] text-black font-bold rounded-full"
-      >
-        운명 확인하기
-      </button>
-
+      <PrimaryButton label= "운명 확인하기" onClick= {onNext} />
     </div>
   );
 }
