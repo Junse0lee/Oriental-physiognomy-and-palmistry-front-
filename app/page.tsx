@@ -6,8 +6,9 @@ import MainLoginForm from "@/components/MainPage/Main_Login_Form";
 import MainPage from "@/components/MainPage/Main_Page";
 import Choose_Hand_Face from "@/components/MainPage/Choose_Hand_Face";
 import HandAnalysis from "@/components/HandAnalysis/HandAnalysis";
+import LoadingPage from "@/components/LoadingPage/LoadingPage";
 
-type SceneType = "LOGIN" | "INFO" | "CHOOSE" | "HAND_ANALYSIS";
+type SceneType = "LOGIN" | "INFO" | "CHOOSE" | "HAND_ANALYSIS" | "LOADING";
 
 export default function Home() {
   const [scene, setScene] = useState<SceneType>("LOGIN");
@@ -23,6 +24,7 @@ export default function Home() {
 
   return (
     <main className="flex h-[100dvh] flex-col items-center px-8 text-white bg-[#1D1D33] overflow-hidden">
+
       {/* 1. [고정 상단] */}
       <div className="w-full text-center mt-[70px] flex-none relative">
         {/* 뒤로가기 버튼: 좌측 상단에 배치하기 위해 절대 위치(absolute) 권장 */}
@@ -82,9 +84,18 @@ export default function Home() {
 
         {/* scene 3: 손금 촬영 */}
         {scene === "HAND_ANALYSIS" && (
-          <HandAnalysis onBack={() => setScene("LOGIN")} />
+          <HandAnalysis
+            onBack={() => setScene("LOGIN")}
+            onNext={() => setScene("LOADING")} />
         )}
       </div>
+      {/* scene 4: 로딩 페이지 */}
+      {scene === "LOADING" && (
+        <div className="absolute inset-0 z-50 bg-[#1D1D33] flex items-center justify-center">
+          <LoadingPage userName={userName} />
+        </div>
+      )}
+
 
       {/* 3. [고정 하단] */}
       <div className="w-full max-w-sm text-center mb-10 flex-none">
