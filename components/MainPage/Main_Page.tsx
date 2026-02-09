@@ -17,7 +17,7 @@ export default function MainPage({ onNext, userName, setUserName }: Props) {
     <div className="w-full h-full flex flex-col items-center">
 
       {/* 1. 성별 선택 영역 (상단 고정) */}
-      <div className="w-full flex justify-between px-[72px] mt-[26px] flex-none">
+      <div className="w-full flex justify-between px-[72px] mt-[45px] flex-none">
         <div className="flex flex-col items-center space-y-2">
           <button
             onClick={() => setGender("male")}
