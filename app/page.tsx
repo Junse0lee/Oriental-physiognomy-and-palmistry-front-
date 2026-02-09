@@ -6,12 +6,12 @@ import MainLoginForm from "@/components/MainPage/Main_Login_Form";
 import MainPage from "@/components/MainPage/Main_Page";
 import Choose_Hand_Face from "@/components/MainPage/Choose_Hand_Face";
 import HandAnalysis from "@/components/HandAnalysis/HandAnalysis";
+import LoadingPage from "@/components/LoadingPage/LoadingPage";
 
-type SceneType = "LOGIN" | "INFO" | "CHOOSE" | "HAND_ANALYSIS";
+type SceneType = "LOGIN" | "INFO" | "CHOOSE" | "HAND_ANALYSIS" | "LOADING";
 
 export default function Home() {
   const [scene, setScene] = useState<SceneType>("LOGIN");
-
   const [userName, setUserName] = useState("");
 
   // 뒤로 가기 버튼 로직
@@ -21,8 +21,32 @@ export default function Home() {
     else if (scene === "HAND_ANALYSIS") setScene("CHOOSE");
   };
 
+  const startAIAnalysis = async (ImageData: string) => {
+    setScene("LOADING"); //일단 로딩 화면으로 비동기식 전환
+
+    try {
+      // 실제 백엔드 주소로 데이터 전송 (예시)
+      // const response = await fetch("https://your-api.com/analyze", {
+      //   method: "POST",
+      //   body: JSON.stringify({ image: imageData, name: userName }),
+      // });
+      // const data = await response.json();
+
+      // 지금은 테스트용으로 3초 대기 후 결과창으로 넘김
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+
+      // setAnalysisResult(data); // 결과 저장
+      //setScene("RESULT"); // 결과 페이지로 이동
+    } catch (error) {
+      console.error("분석 실패:", error);
+      alert("분석 중 오류가 발생했습니다.");
+      setScene("HAND_ANALYSIS"); // 실패 시 다시 촬영 페이지로
+    }
+  };
+
   return (
     <main className="flex h-[100dvh] flex-col items-center px-8 text-white bg-[#1D1D33] overflow-hidden">
+
       {/* 1. [고정 상단] */}
       <div className="w-full text-center mt-[70px] flex-none relative">
         {/* 뒤로가기 버튼: 좌측 상단에 배치하기 위해 절대 위치(absolute) 권장 */}
@@ -82,9 +106,20 @@ export default function Home() {
 
         {/* scene 3: 손금 촬영 */}
         {scene === "HAND_ANALYSIS" && (
-          <HandAnalysis onBack={() => setScene("LOGIN")} />
+          <HandAnalysis
+            onBack={() => setScene("LOGIN")}
+            onStartAnalysis={(image) => startAIAnalysis(image)}
+          />
+        )}
+
+        {/* scene 4: 로딩 페이지 */}
+        {scene === "LOADING" && (
+          <div className="absolute inset-0 z-50 bg-[#1D1D33] flex items-center justify-center">
+            <LoadingPage userName={userName} />
+          </div>
         )}
       </div>
+
 
       {/* 3. [고정 하단] */}
       <div className="w-full max-w-sm text-center mb-10 flex-none">
