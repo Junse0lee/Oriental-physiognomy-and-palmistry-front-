@@ -1,12 +1,11 @@
 @import "tailwindcss";
 
-/* 1. 배경색 변수 설정: 우리가 원하는 남색(#1D1D33)으로 고정 */
 :root {
   --background: #34284e;
   --foreground: #ffffff;
 }
 
-/* 2. 다크모드/라이트모드 자동 전환이 방해되지 않도록 강제 설정 */
+/* 다크모드 강제 고정 */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #34284e;
@@ -14,13 +13,25 @@
   }
 }
 
-/* 3. 기본 바디 스타일: 
-   PC에서 기둥 밖은 검은색(black), 기둥 안은 위에서 정한 배경색이 보이게 합니다. */
+html {
+  /* 중복 선언을 하나로 합치고 표준 속성도 추가합니다. */
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
 body {
   margin: 0;
   padding: 0;
-  background-color: black; /* 기둥 밖의 배경 */
+  background-color: black;
+  /* 기둥 밖 배경 */
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
-  overflow-x: hidden; /* 좌우 스크롤 방지 */
+  overflow-x: hidden;
+
+  /* 폰트 보정 */
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

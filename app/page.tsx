@@ -57,7 +57,7 @@ export default function Home() {
       formData.append("file", blob, "hand_capture.png");
 
       // 2. 백엔드 서버(8000포트)로 데이터 전송
-      const response = await fetch("http://localhost:8000/hand/analyze", {
+      const response = await fetch("https://werner-predomestic-lise.ngrok-free.app/hand/analyze", {
         method: "POST",
         body: formData,
         // FormData를 보낼 때는 브라우저가 자동으로 Boundary를 설정하므로 
