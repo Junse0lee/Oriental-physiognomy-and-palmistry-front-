@@ -20,6 +20,7 @@ interface PalmLine {
 // 2. 전체 분석 결과 데이터 타입
 interface AnalysisResultData {
   lines: PalmLine[];
+  mounts: { [key: string]: [number, number] };
   report: string;
   image_size: {
     width: number;
