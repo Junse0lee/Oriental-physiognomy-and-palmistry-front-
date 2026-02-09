@@ -57,8 +57,12 @@ export default function Home() {
       formData.append("file", blob, "hand_capture.png");
 
       // 2. 백엔드 서버(8000포트)로 데이터 전송
-      const response = await fetch("https://werner-predomestic-lise.ngrok-free.app/hand/analyze", {
+      const response = await fetch("https://werner-predomestic-lise.ngrok-free.dev/hand/analyze", {
         method: "POST",
+        headers: {
+          // ngrok 검사 페이지를 건너뛰기 위한 헤더 (선택사항이지만 추천)
+          "ngrok-skip-browser-warning": "69420"
+        },
         body: formData,
         // FormData를 보낼 때는 브라우저가 자동으로 Boundary를 설정하므로 
         // Headers에 Content-Type을 수동으로 넣지 않는 것이 정석입니다.
