@@ -24,10 +24,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko">
-      <body className="bg-black flex justify-center overflow-x-hidden">
-        
-        {/* bg-[#1D1D33] 클래스를 반드시 추가해야 합니다! */}
+    <html lang="ko" suppressHydrationWarning>
+      {/* style={{ WebkitTextSizeAdjust: "100%" }} 같은 인라인 속성을 제거했습니다. */}
+      <body className={`${geistSans.variable} ${geistMono.variable} bg-black flex justify-center overflow-x-hidden antialiased`}>
+
+        {/* 모바일 뷰를 위한 컨테이너 */}
         <div className="w-full max-w-md min-h-[100dvh] bg-[#1D1D33] shadow-2xl relative flex flex-col">
           {children}
         </div>
