@@ -153,7 +153,7 @@ export default function HandAnalysis({ onStartAnalysis, onBack }: Props) {
         </div>
 
         <button onClick={onBack} className="mt-8 text-xs text-gray-500 underline w-full text-center">
-          이전으로 돌아가기
+          처음으로 돌아가기
         </button>
       </div>
     </div>
