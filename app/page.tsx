@@ -21,26 +21,39 @@ export default function Home() {
     else if (scene === "HAND_ANALYSIS") setScene("CHOOSE");
   };
 
-  const startAIAnalysis = async (ImageData: string) => {
+  const startAIAnalysis = async (imageData: string) => {
     setScene("LOADING"); //일단 로딩 화면으로 비동기식 전환
 
     try {
-      // 실제 백엔드 주소로 데이터 전송 (예시)
-      // const response = await fetch("https://your-api.com/analyze", {
-      //   method: "POST",
-      //   body: JSON.stringify({ image: imageData, name: userName }),
-      // });
-      // const data = await response.json();
+      // 1. 이미지를 서버로 전송할 형식으로 변환
+      const response = await fetch("http://localhost:8000/analyze", { // 백엔드 주소 (예시)
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          image: imageData, // Base64 문자열
+          user_name: userName,
+          type: scene === "HAND_ANALYSIS" ? "hand" : "face" // 손금인지 관상인지 구분
+        }),
+      });
 
-      // 지금은 테스트용으로 3초 대기 후 결과창으로 넘김
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      const data = await response.json();
 
-      // setAnalysisResult(data); // 결과 저장
-      //setScene("RESULT"); // 결과 페이지로 이동
+      if (data.success) {
+        // 성공 시 결과 페이지로 (나중에 결과 페이지 scene 추가 필요)
+        console.log("분석 완료:", data.result);
+        // setAnalysisResult(data.result);
+        // setScene("RESULT");
+      } else {
+        // 💡 여기서 '미검출' 에러 처리!
+        alert(data.message);
+        setScene("HAND_ANALYSIS");
+      }
     } catch (error) {
-      console.error("분석 실패:", error);
-      alert("분석 중 오류가 발생했습니다.");
-      setScene("HAND_ANALYSIS"); // 실패 시 다시 촬영 페이지로
+      console.error("서버 연결 실패:", error);
+      alert("서버와 통신할 수 없습니다.");
+      setScene("HAND_ANALYSIS");
     }
   };
 
