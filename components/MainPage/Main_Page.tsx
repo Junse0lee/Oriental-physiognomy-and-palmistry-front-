@@ -12,15 +12,14 @@ export default function MainPage({ onNext, userName, setUserName }: Props) {
   const [gender, setGender] = useState<"male" | "female" | null>(null);
   const [birth, setBirth] = useState("");
 
-  // 💡 생년월일이 비어있지 않은데 8자리가 아닐 경우를 체크합니다.
   const isBirthInvalid = birth.length > 0 && birth.length !== 8;
 
   return (
-    <div className="w-full h-full flex flex-col items-center">
+    // 전체 컨테이너에 max-width를 주고 mx-auto로 가운데 정렬을 보장합니다.
+    <div className="w-full h-full max-w-[450px] mx-auto flex flex-col items-center">
 
-      {/* 1. 성별 선택 영역 */}
-      <div className="w-full flex justify-between px-[72px] mt-[45px] flex-none">
-        {/* ... (성별 버튼 코드는 동일) ... */}
+      {/* 1. 성별 선택 영역: 고정 px 대신 w-full과 px-[10%]를 사용하여 비율 유지 */}
+      <div className="w-full flex justify-around px-[10%] mt-[45px] flex-none">
         <div className="flex flex-col items-center space-y-2">
           <button
             onClick={() => setGender("male")}
@@ -44,22 +43,25 @@ export default function MainPage({ onNext, userName, setUserName }: Props) {
         </div>
       </div>
 
-      {/* 2. 입력 영역 */}
-      <div className="mt-[71px] w-full px-[72px] flex flex-col items-center flex-none">
-        <div className="flex items-center space-x-4 w-full">
-          <label className="text-[#E2C37B] font-medium shrink-0 w-20">이름 :</label>
+      {/* 2. 입력 영역: px-[12%] 정도로 유연하게 설정 */}
+      <div className="mt-[60px] w-full px-[12%] flex flex-col space-y-6 flex-none">
+
+        {/* 이름 입력 */}
+        <div className="flex items-center w-full">
+          <label className="text-[#E2C37B] font-medium shrink-0 w-16 sm:w-20 text-sm sm:text-base">이름 :</label>
           <input
             type="text"
             value={userName}
             onChange={(e) => setUserName(e.target.value)}
             placeholder="이름 입력"
-            className="w-full bg-transparent border-b border-[#E2C37B] py-1 outline-none text-white focus:border-white transition-colors"
+            className="flex-1 bg-transparent border-b border-[#E2C37B] py-1 outline-none text-white focus:border-white transition-colors min-w-0"
           />
         </div>
 
-        <div className="flex flex-col w-full mt-[13px]">
-          <div className="flex items-center space-x-4 w-full">
-            <label className="text-[#E2C37B] font-medium shrink-0 w-20">생년월일 :</label>
+        {/* 생년월일 입력 */}
+        <div className="flex flex-col w-full">
+          <div className="flex items-center w-full">
+            <label className="text-[#E2C37B] font-medium shrink-0 w-16 sm:w-20 text-sm sm:text-base">생년월일 :</label>
             <input
               type="text"
               inputMode="numeric"
@@ -69,16 +71,15 @@ export default function MainPage({ onNext, userName, setUserName }: Props) {
                 if (value.length <= 8) setBirth(value);
               }}
               placeholder="YYYYMMDD"
-              className={`w-full bg-transparent border-b py-1 outline-none text-white transition-colors 
+              className={`flex-1 bg-transparent border-b py-1 outline-none text-white transition-colors min-w-0
                 ${isBirthInvalid ? "border-red-500" : "border-[#E2C37B] focus:border-white"}`}
             />
           </div>
 
-          {/* 💡 에러 메시지: 8자리가 아닐 때만 등장 */}
-          <div className="h-5 mt-1 ml-24"> {/* 라벨 넓이만큼 마진을 주어 정렬 */}
+          <div className="h-5 mt-1 ml-16 sm:ml-20">
             {isBirthInvalid && (
               <p className="text-red-500 text-[10px] animate-pulse">
-                * 생년월일 숫자 8자리를 입력해주세요.
+                * 숫자 8자리를 입력해주세요.
               </p>
             )}
           </div>
@@ -88,7 +89,7 @@ export default function MainPage({ onNext, userName, setUserName }: Props) {
       <div className="flex-1 min-h-[20px]" />
 
       {/* 4. 시작하기 버튼 */}
-      <div className="w-full px-[72px] pb-10 flex-none">
+      <div className="w-full px-[12%] pb-10 flex-none">
         <button
           disabled={!gender || !userName || birth.length !== 8}
           onClick={onNext}
