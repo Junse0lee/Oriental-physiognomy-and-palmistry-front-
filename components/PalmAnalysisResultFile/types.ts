@@ -1,4 +1,5 @@
 //같은 타입들을 공유하기 때문에 같은 타입을 묶어서 수행
+// src/components/analysis/types.ts
 export interface LineData {
     name: string;
     label: string;

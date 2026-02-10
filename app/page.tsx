@@ -7,7 +7,7 @@ import MainPage from "@/components/MainPage/Main_Page";
 import Choose_Hand_Face from "@/components/MainPage/Choose_Hand_Face";
 import HandAnalysis from "@/components/HandAnalysis/HandAnalysis";
 import LoadingPage from "@/components/LoadingPage/LoadingPage";
-import PalmAnalysisResult from "@/components/PalmAnalysisResult"; // ✅ 1. 추가
+import PalmAnalysisResult from "@/components/PalmAnalysisResultFile/PalmAnalysisResult"; // ✅ 1. 추가
 
 // 1. 손금 선 하나에 대한 타입
 interface PalmLine {
