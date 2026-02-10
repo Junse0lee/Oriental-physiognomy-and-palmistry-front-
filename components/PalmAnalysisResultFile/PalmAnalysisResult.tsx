@@ -1,3 +1,4 @@
+// src/components/analysis/PalmAnalysisResult.tsx
 import React, { useEffect, useState, useCallback } from 'react';
 import PalmCanvas from './PalmCanvas';
 import PalmReport from './PalmReport';
@@ -17,11 +18,8 @@ const PalmAnalysisResult: React.FC<Props> = ({ data, imageUrl }) => {
         return () => clearTimeout(timer);
     }, []);
 
-    // 1. 타입을 MouseEvent 대신 Event로 통일하여 addEventListener와 타입을 맞춥니다.
     const handleCardClick = useCallback((e: Event) => {
         const target = e.target as HTMLElement;
-
-        // .palm-scroll-area 안에 있는 개별 카드 div를 찾음
         const card = target.closest('.palm-scroll-area > div') as HTMLElement;
 
         if (card) {
@@ -31,7 +29,6 @@ const PalmAnalysisResult: React.FC<Props> = ({ data, imageUrl }) => {
             const titleText = h3 ? h3.innerText : card.innerText;
 
             let nextLine: string | null = null;
-
             if (titleText.includes("감정선")) nextLine = "heart";
             else if (titleText.includes("두뇌선")) nextLine = "head";
             else if (titleText.includes("운명선")) nextLine = "fate";
@@ -45,21 +42,15 @@ const PalmAnalysisResult: React.FC<Props> = ({ data, imageUrl }) => {
             if (nextLine) {
                 setSelectedLine(nextLine);
             }
-
-            card.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            // 여기서 직접 scrollIntoView를 호출하지 않아도 PalmReport의 useEffect가 처리합니다.
         }
     }, [data.lines]);
 
     useEffect(() => {
         const container = document.querySelector('.palm-report-container');
         if (!container) return;
-
-        // ✅ handleCardClick이 이미 (e: Event) => void 타입이므로 any 없이 등록 가능합니다.
         container.addEventListener('click', handleCardClick);
-
-        return () => {
-            container.removeEventListener('click', handleCardClick);
-        };
+        return () => container.removeEventListener('click', handleCardClick);
     }, [handleCardClick, data.report]);
 
     return (
@@ -85,6 +76,7 @@ const PalmAnalysisResult: React.FC<Props> = ({ data, imageUrl }) => {
             </section>
 
             <section className="flex-1 min-h-0 overflow-hidden bg-[#111113]/40 rounded-t-[2.5rem] border-t border-white/5 shadow-inner">
+                {/* ✅ selectedLine을 추가로 전달합니다 */}
                 <PalmReport reportHtml={data.report} selectedLine={selectedLine} />
             </section>
         </div>
