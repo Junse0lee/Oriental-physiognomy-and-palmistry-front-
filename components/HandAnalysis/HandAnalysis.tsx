@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect, useCallback } from "react";
+import Image from "next/image"; // 상단 임포트 확인
 
 interface Props {
   onBack: () => void;
@@ -40,7 +41,6 @@ export default function HandAnalysis({ onStartAnalysis, onBack }: Props) {
 
   useEffect(() => {
     startCamera();
-
     return () => {
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
@@ -82,14 +82,41 @@ export default function HandAnalysis({ onStartAnalysis, onBack }: Props) {
       {/* 카메라 프리뷰 / 결과 이미지 영역 */}
       <div className="relative w-full aspect-[3/4] bg-black rounded-lg overflow-hidden border-2 border-purple-500/30">
         {!capturedImage ? (
-          <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            muted
-            className="w-full h-full object-cover"
-          />
+          <>
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              className="w-full h-full object-cover"
+            />
+
+            {/* 📍 에러 해결된 가이드 이미지 영역 */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              {/* filter와 opacity 같은 스타일은 부모 div에서 처리합니다 */}
+              <div
+                className="relative w-3/4 h-3/4 opacity-50 transition-opacity duration-500"
+                style={{ filter: "drop-shadow(0 0 10px rgba(168, 85, 247, 0.5))" }}
+              >
+                <Image
+                  src="/images/hand-guide.png"
+                  alt="Hand Guide"
+                  fill
+                  priority
+                  sizes="75vw"
+                  className="object-contain"
+                />
+              </div>
+              <div className="absolute bottom-6">
+                <p className="text-white text-xs bg-purple-900/60 px-4 py-2 rounded-full backdrop-blur-sm border border-purple-500/30">
+                  가이드에 손바닥을 맞춰주세요
+                </p>
+              </div>
+            </div>
+          </>
         ) : (
+          /* 촬영 결과물은 Base64이므로 img 태그 유지 (에러 방지 주석 포함) */
+          /* eslint-disable-next-line @next/next/no-img-element */
           <img src={capturedImage} className="w-full h-full object-cover" alt="Captured" />
         )}
       </div>
