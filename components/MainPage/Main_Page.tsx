@@ -6,17 +6,21 @@ interface Props {
   onNext: () => void;
   userName: string;
   setUserName: (name: string) => void;
+  // 부모로부터 전달받는 주사용 손 상태와 변경 함수
   userHand: "left" | "right" | null;
   setUserHand: (hand: "left" | "right") => void;
 }
 
-export default function MainPage({ onNext, userName, setUserName }: Props) {
+export default function MainPage({ onNext, userName, setUserName, userHand, setUserHand }: Props) {
   const [gender, setGender] = useState<"male" | "female" | null>(null);
   const [birth, setBirth] = useState("");
-  // ✅ 주사용 손 상태 추가
-  const [hand, setHand] = useState<"right" | "left" | null>(null);
 
   const isBirthInvalid = birth.length > 0 && birth.length !== 8;
+
+  // ✅ 핸들러 함수: 로컬 상태가 아닌 부모의 setUserHand를 직접 호출하도록 연결
+  const handleHandSelect = (selectedHand: "left" | "right") => {
+    setUserHand(selectedHand);
+  };
 
   return (
     <div className="w-full h-full max-w-[450px] mx-auto flex flex-col items-center">
@@ -87,21 +91,21 @@ export default function MainPage({ onNext, userName, setUserName }: Props) {
         </div>
       </div>
 
-      {/* 3. ✅ 주로 사용하는 손 선택 영역 추가 */}
+      {/* 3. ✅ 주사용 손 선택 영역 (부모의 userHand 상태와 연동) */}
       <div className="mt-8 w-full px-[12%] flex flex-col items-center flex-none">
         <p className="text-[#E2C37B] text-sm font-medium mb-4">주로 사용하는 손은 어디인가요?</p>
         <div className="flex space-x-8">
           <button
-            onClick={() => setHand("left")}
+            onClick={() => handleHandSelect("left")}
             className={`px-8 py-2 rounded-xl border-2 transition-all text-sm font-bold
-              ${hand === "left" ? "border-[#E2C37B] bg-[#E2C37B] text-black" : "border-gray-600 text-gray-400 bg-transparent"}`}
+              ${userHand === "left" ? "border-[#E2C37B] bg-[#E2C37B] text-black" : "border-gray-600 text-gray-400 bg-transparent"}`}
           >
             왼손
           </button>
           <button
-            onClick={() => setHand("right")}
+            onClick={() => handleHandSelect("right")}
             className={`px-8 py-2 rounded-xl border-2 transition-all text-sm font-bold
-              ${hand === "right" ? "border-[#E2C37B] bg-[#E2C37B] text-black" : "border-gray-600 text-gray-400 bg-transparent"}`}
+              ${userHand === "right" ? "border-[#E2C37B] bg-[#E2C37B] text-black" : "border-gray-600 text-gray-400 bg-transparent"}`}
           >
             오른손
           </button>
@@ -110,13 +114,13 @@ export default function MainPage({ onNext, userName, setUserName }: Props) {
 
       <div className="flex-1 min-h-[20px]" />
 
-      {/* 4. 시작하기 버튼: hand 선택 여부도 조건에 추가 */}
+      {/* 4. 시작하기 버튼: 부모로부터 온 userHand가 있어야 활성화 */}
       <div className="w-full px-[12%] pb-10 flex-none">
         <button
-          disabled={!gender || !userName || birth.length !== 8 || !hand}
+          disabled={!gender || !userName || birth.length !== 8 || !userHand}
           onClick={onNext}
           className={`w-full py-4 rounded-full font-bold text-lg transition-all
-            ${gender && userName && birth.length === 8 && hand
+            ${gender && userName && birth.length === 8 && userHand
               ? "bg-[#E2C37B] text-black shadow-[0_0_15px_rgba(226,195,123,0.3)]"
               : "bg-gray-700 text-gray-500 cursor-not-allowed"}`}
         >

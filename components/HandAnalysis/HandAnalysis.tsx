@@ -6,9 +6,10 @@ import Image from "next/image"; // 상단 임포트 확인
 interface Props {
   onBack: () => void;
   onStartAnalysis: (image: string) => void;
+  userHand: "left" | "right" | null;
 }
 
-export default function HandAnalysis({ onStartAnalysis, onBack }: Props) {
+export default function HandAnalysis({ onStartAnalysis, onBack, userHand }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -99,7 +100,7 @@ export default function HandAnalysis({ onStartAnalysis, onBack }: Props) {
                 style={{ filter: "drop-shadow(0 0 10px rgba(168, 85, 247, 0.5))" }}
               >
                 <Image
-                  src="/images/hand-guide.png"
+                  src={userHand === "left" ? "/images/hand-guide-left.png" : "/images/hand-guide-right.png"}
                   alt="Hand Guide"
                   fill
                   priority

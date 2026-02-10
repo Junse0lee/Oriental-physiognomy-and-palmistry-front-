@@ -35,6 +35,7 @@ export default function Home() {
   const [userName, setUserName] = useState("");
   const [analysisResult, setAnalysisResult] = useState<AnalysisResultData | null>(null);
   const [userCapturedImage, setUserCapturedImage] = useState<string>(""); // ✅ 4. 찍은 사진 저장
+  const [userHand, setUserHand] = useState<"left" | "right" | null>(null);
 
   const handleBack = () => {
     if (scene === "INFO") setScene("LOGIN");
@@ -121,6 +122,8 @@ export default function Home() {
             onNext={() => setScene("CHOOSE")}
             userName={userName}
             setUserName={setUserName}
+            userHand={userHand}
+            setUserHand={setUserHand}
           />
         )}
 
@@ -135,6 +138,7 @@ export default function Home() {
           <HandAnalysis
             onBack={handleBack}
             onStartAnalysis={(image) => startAIAnalysis(image)}
+            userHand={userHand}
           />
         )}
 
