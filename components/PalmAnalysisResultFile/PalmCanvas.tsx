@@ -1,4 +1,3 @@
-// src/components/analysis/PalmCanvas.tsx
 import React from 'react';
 import Image from 'next/image';
 import { AnalysisData } from './types';
