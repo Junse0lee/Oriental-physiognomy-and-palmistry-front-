@@ -94,7 +94,7 @@ export default function Home() {
   };
 
   return (
-    <main className="flex h-[100dvh] flex-col items-center px-8 text-white bg-[#1D1D33] overflow-hidden">
+    <main className="flex h-[100dvh] flex-col items-center px-8 text-white bg-[var(--background)] overflow-hidden">
 
       {/* 1. [상단 타이틀 영역] - RESULT 씬일 때는 디자인상 숨기거나 조정 가능 */}
       {scene !== "RESULT" && (

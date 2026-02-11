@@ -1,23 +1,23 @@
 @import "tailwindcss";
 
 :root {
-  --background: #34284e;
+  --background: #ffffff;
   --foreground: #ffffff;
 }
 
 /* 다크모드 강제 고정 */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #34284e;
+    --background: #ffffff;
     --foreground: #ffffff;
   }
 }
 
 html {
-  /* 중복 선언을 하나로 합치고 표준 속성도 추가합니다. */
   text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
   -webkit-touch-callout: none;
+  /* 모바일에서 이미지 눌렀을 때 저장/ 복사 메뉴 방지 */
   -webkit-tap-highlight-color: transparent;
 }
 
