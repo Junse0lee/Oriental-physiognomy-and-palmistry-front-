@@ -39,7 +39,7 @@ export default function Main_Login_Form({ onNext }: Props) {
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           </div>
-          <p className="text-[#000000] text-xl font-medium">관상과 손금</p>
+          <p className="text-[#000000] text-xl font-medium">너 내가 그럴 줄 알았다</p>
         </div>
 
         {/* 3. 하단 버튼 영역 (비율 C) : 텍스트와 버튼 사이의 간격 및 버튼 위치 */}
