@@ -1,28 +1,57 @@
-// 1. [Include 단계] 필요한 도구 가져오기
-import React from "react";
-import PrimaryButton from "@/components/For_design/Common/PrimaryButton";
+"use client";
 
-// 2. [Interface 단계] 이 방(컴포넌트)을 쓰기 위해 필요한 규칙 정의
+import React, { useState, useEffect, use } from "react";
+import Image from "next/image"; // Next.js의 이미지 최적화 컴포넌트
+import PrimaryButton from "@/components/Ui/Buttons";
+
 interface Props {
-    onNext: () => void; //"나를 부를 때 onNext라는 함수를 꼭 넘겨줘"라는 뜻입니다.
+  onNext: () => void;
 }
 
-// 3. [Main 함수 단계] 실제 화면을 그리는 함수
 // export default는 "이 파일을 다른 데서 쓸 수 있게 내보낸다"는 뜻입니다.
 export default function Main_Login_Form({ onNext }: Props) {
-  
-  // 4. [Return 단계] 화면에 보여줄 HTML 구조 (도화지에 그림 그리기)
-  return (
-    <div className="flex flex-col items-center space-y-10">
-      
-      {/* 이미지에서 본 눈 모양 아이콘과 텍스트가 들어갈 자리 */}
-      <div className="text-center space-y-4">
-        <div className="text-6xl">👁️</div> {/* 임시 아이콘 */}
-        <p className="text-[#E2C37B] text-xl">당신의 미래가 보입니다</p>
-      </div>
+  const [showButton, setShowButton] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowButton(true);
+    }, 2000);
 
-      {/* 5. [Event 단계] 클릭 시 다음 장면으로 넘겨주는 버튼 */}
-      <PrimaryButton label= "운명 확인하기" onClick= {onNext} />
+    return () => clearTimeout(timer); // 페이지를 나가면 타이머 청소
+  }, []);
+
+  return (
+    <div className="flex flex-col items-center h-full w-full">
+
+      {/* 로고와 "손금과 관상" */}
+      {/* 상단 여백 */}
+      <div className={`flex-[${2}] w-full`} />
+
+      <div className="flex-[7.5] flex flex-col items-center w-full">
+        {/* 로고 및 텍스트 영역  */}
+        <div className="flex flex-col items-center flex-none">
+          <div className="relative w-48 h-48 mb-[17px]"> {/* 이미지-텍스트 간격 17px 고정 */}
+            <Image
+              src="/images/Main_Ikon.png"
+              alt="관상과 손금 로고"
+              fill
+              className="object-contain"
+              priority
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            />
+          </div>
+          <p className="text-[#000000] text-xl font-medium">내가 너 그럴줄 알았다</p>
+        </div>
+
+        {/* 3. 하단 버튼 영역 (비율 C) : 텍스트와 버튼 사이의 간격 및 버튼 위치 */}
+        {/* 3. 중간 여백 (비율 B): 로고와 버튼 사이의 간격 */}
+        {/* 💡 이 숫자를 키우면 버튼이 아래로 멀어집니다! */}
+        <div className="flex-[2.5] w-full" />
+        {/*버튼*/}
+        <div className={`flex-none transition-opacity duration-1000 ${showButton ? "opacity-100" : "opacity-0"}`}>
+          <PrimaryButton label="시작" onClick={onNext} />
+        </div>
+        <div className="flex-[2] w-full" />
+      </div>
     </div>
   );
 }
