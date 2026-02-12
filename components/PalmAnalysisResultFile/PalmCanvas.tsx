@@ -11,13 +11,26 @@ interface Props {
 }
 
 const PalmCanvas: React.FC<Props> = ({ imageUrl, data, selectedLine, isVisible, onReset }) => {
-    // ✅ 이미지의 종횡비 계산 (예: 세로 1280 / 가로 960 = 1.333)
-    const aspectRatio = data.image_size.height / data.image_size.width;
+    const { width: imgW, height: imgH } = data.image_size;
+    const aspectRatio = imgH / imgW;
+
+    // ✅ 서버 데이터 키값 -> 화면에 표시할 한자 매핑 (오류 해결 1)
+    const mountLabels: Record<string, string> = {
+        "금": "金",
+        "목성": "木",
+        "토성": "土",
+        "태양": "日",
+        "수성": "水",
+        "제2화성": "火",
+        "월구": "月",
+        "地": "地",
+        "火": "火"
+    };
 
     return (
         <div
-            className="relative w-full overflow-hidden rounded-[2.5rem] border border-white/10 shadow-2xl bg-black/40"
-            // ✅ Intrinsic Ratio 기법: 너비 대비 높이 비율만큼 하단 패딩을 주어 공간 확보
+            className="relative w-full overflow-hidden rounded-[2.5rem] border border-white/10 shadow-2xl bg-black"
+            // ✅ 컨테이너 자체를 이미지 종횡비와 완벽히 일치시킴
             style={{ paddingBottom: `${aspectRatio * 100}%` }}
         >
             <div className="absolute inset-0">
@@ -26,18 +39,20 @@ const PalmCanvas: React.FC<Props> = ({ imageUrl, data, selectedLine, isVisible, 
                     src={imageUrl}
                     alt="Hand Analysis"
                     fill
-                    // ✅ object-cover를 사용하여 컨테이너를 꽉 채우고 선과 정확히 매칭
-                    className={`transition-all duration-1000 object-cover ${selectedLine ? 'opacity-30 blur-md scale-105' : 'opacity-100'
+                    // ✅ object-fill을 사용하여 SVG 좌표계와 이미지 픽셀을 1:1로 일치시킴 (오류 해결 2: Overlay 어긋남 방지)
+                    className={`transition-all duration-1000 object-fill ${selectedLine ? 'opacity-30 blur-md scale-105' : 'opacity-100'
                         }`}
                     unoptimized
                 />
 
+                {/* 분석 레이어 (SVG) */}
                 <svg
-                    viewBox={`0 0 ${data.image_size.width} ${data.image_size.height}`}
+                    viewBox={`0 0 ${imgW} ${imgH}`}
                     className="absolute inset-0 w-full h-full z-20 pointer-events-none"
-                    // ✅ none으로 설정하여 부모 컨테이너(이미지 비율과 동일)에 완전히 늘려 맞춤
-                    preserveAspectRatio="none"
+                    // ✅ xMidYMid meet으로 설정하여 이미지와 선이 항상 같은 비율로 확장되게 함
+                    preserveAspectRatio="xMidYMid meet"
                 >
+                    {/* 손금 선 렌더링 */}
                     {data.lines.map((line) => {
                         const isFocused = !selectedLine || selectedLine === line.name;
                         const isSelected = selectedLine === line.name;
@@ -48,45 +63,63 @@ const PalmCanvas: React.FC<Props> = ({ imageUrl, data, selectedLine, isVisible, 
                                 points={line.points.map((p) => `${p[0]},${p[1]}`).join(' ')}
                                 fill="none"
                                 stroke={isSelected ? "#ffffff" : `rgb(${line.color.join(',')})`}
-                                strokeWidth={isSelected ? "16" : "6"}
+                                strokeWidth={isSelected ? "22" : "10"}
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 style={{
-                                    opacity: isVisible && isFocused ? 1 : 0.1,
-                                    filter: isSelected
-                                        ? 'drop-shadow(0 0 8px #fff) drop-shadow(0 0 20px rgba(255,255,255,0.6))'
-                                        : 'none',
-                                    transition: 'all 0.5s cubic-bezier(0.23, 1, 0.32, 1)',
-                                    zIndex: isSelected ? 50 : 1
+                                    opacity: isVisible && isFocused ? 1 : 0.05,
+                                    filter: isSelected ? 'drop-shadow(0 0 15px #fff)' : 'none',
+                                    transition: 'all 0.5s ease-in-out',
                                 }}
                             />
                         );
                     })}
 
-                    {/* 구역(Mounts) 점 */}
-                    {data.mounts && Object.entries(data.mounts).map(([name, coords]) => (
-                        <circle
-                            key={`mount-${name}`}
-                            cx={coords[0]}
-                            cy={coords[1]}
-                            r="10"
-                            fill="#E2C37B"
-                            style={{
-                                opacity: isVisible && !selectedLine ? 0.4 : 0,
-                                filter: 'drop-shadow(0 0 8px #E2C37B)',
-                                transition: 'opacity 0.5s ease'
-                            }}
-                        />
-                    ))}
+                    {/* ✅ 구역(Mounts) 문자 표시 (오류 해결 3) */}
+                    {data.mounts && Object.entries(data.mounts).map(([name, coords]) => {
+                        const mountVisible = isVisible && !selectedLine;
+                        const label = mountLabels[name] || name;
+
+                        return (
+                            <g key={`mount-${name}`} style={{ opacity: mountVisible ? 1 : 0, transition: 'opacity 0.5s' }}>
+                                {/* 구역 강조 원 (반투명) */}
+                                <circle
+                                    cx={coords[0]}
+                                    cy={coords[1]}
+                                    r="50"
+                                    fill="rgba(226, 195, 123, 0.2)"
+                                    stroke="rgba(226, 195, 123, 0.5)"
+                                    strokeWidth="2"
+                                />
+                                {/* 구역 텍스트 (한자) */}
+                                <text
+                                    x={coords[0]}
+                                    y={coords[1]}
+                                    dy="0.35em"
+                                    textAnchor="middle"
+                                    fill="#E2C37B"
+                                    fontSize="32"
+                                    fontWeight="900"
+                                    style={{
+                                        paintOrder: 'stroke',
+                                        stroke: 'rgba(0,0,0,0.6)',
+                                        strokeWidth: '4px'
+                                    }}
+                                >
+                                    {label}
+                                </text>
+                            </g>
+                        );
+                    })}
                 </svg>
 
-                {/* 전체보기 버튼 */}
+                {/* 포커스 해제 버튼 */}
                 {selectedLine && (
                     <button
                         onClick={onReset}
-                        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 bg-[#E2C37B] text-black px-6 py-2 rounded-full font-bold shadow-[0_0_20px_rgba(226,195,123,0.4)] transition-transform active:scale-95"
+                        className="absolute bottom-10 left-1/2 -translate-x-1/2 z-30 bg-[#E2C37B] text-black px-8 py-3 rounded-full font-black shadow-2xl active:scale-95 transition-transform"
                     >
-                        전체보기 ↩
+                        전체 결과 보기 ↩
                     </button>
                 )}
             </div>
