@@ -94,27 +94,9 @@ export default function Home() {
   };
 
   return (
-    <main className="flex h-[100dvh] flex-col items-center px-8 text-white bg-[var(--background)] overflow-hidden">
+    <main className="flex h-[100dvh] flex-col items-center justify-center px-8 text-white bg-[var(--background)] overflow-hidden">
 
-      {/* 1. [상단 타이틀 영역] - RESULT 씬일 때는 디자인상 숨기거나 조정 가능 */}
-      {scene !== "RESULT" && (
-        <div className="w-full text-center mt-[70px] flex-none relative">
-          {scene !== "LOGIN" && (
-            <button onClick={handleBack} className="absolute left-0 top-0 flex items-center text-[#E2C37B]">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-              </svg>
-              <span className="ml-1 text-sm font-medium">뒤로</span>
-            </button>
-          )}
-          <p className="text-sm text-[#E2C37B] tracking-widest uppercase">당신의 운명을 읽어드립니다</p>
-          <h1 className="text-2xl font-bold text-[#E2C37B] mt-[13px]">당신의 운명은 어떠한가요</h1>
-          <div className="w-full h-[1px] bg-purple-500/20 mt-[16px]" />
-        </div>
-      )}
-
-      {/* 2. [중간 영역] */}
-      <div className="flex flex-col items-center w-full flex-1 justify-center min-h-0 overflow-y-auto w-full">
+      <div className="flex flex-col items-center w-full justify-center min-h-0 overflow-y-auto flex-1 w-full">
         {scene === "LOGIN" && <MainLoginForm onNext={() => setScene("INFO")} />}
 
         {scene === "INFO" && (
@@ -158,14 +140,6 @@ export default function Home() {
           </div>
         )}
       </div>
-
-      {/* 3. [하단 카피라이트] */}
-      {scene !== "RESULT" && (
-        <div className="w-full max-w-sm text-center mb-10 flex-none">
-          <div className="w-full h-[1px] bg-purple-500/20 mb-6" />
-          <p className="text-xs text-gray-600">© 2026 Oriental Physiognomy. All rights reserved.</p>
-        </div>
-      )}
     </main>
   );
 }
