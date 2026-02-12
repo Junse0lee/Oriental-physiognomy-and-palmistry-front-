@@ -24,7 +24,7 @@ export default function Main_Login_Form({ onNext }: Props) {
 
       {/* 로고와 "손금과 관상" */}
       {/* 상단 여백 */}
-      <div className={`flex-[${1.5}] w-full`} />
+      <div className={`flex-[${2}] w-full`} />
 
       <div className="flex-[7.5] flex flex-col items-center w-full">
         {/* 로고 및 텍스트 영역  */}
@@ -39,7 +39,7 @@ export default function Main_Login_Form({ onNext }: Props) {
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           </div>
-          <p className="text-[#000000] text-xl font-medium">너 내가 그럴 줄 알았다</p>
+          <p className="text-[#000000] text-xl font-medium">내가 너 그럴줄 알았다</p>
         </div>
 
         {/* 3. 하단 버튼 영역 (비율 C) : 텍스트와 버튼 사이의 간격 및 버튼 위치 */}
