@@ -24,7 +24,7 @@ export default function Main_Login_Form({ onNext }: Props) {
 
       {/* 로고와 "손금과 관상" */}
       {/* 상단 여백 */}
-      <div className={`flex-[${2}] w-full`} />
+      <div className={`flex-[${1.5}] w-full`} />
 
       <div className="flex-[7.5] flex flex-col items-center w-full">
         {/* 로고 및 텍스트 영역  */}
@@ -50,7 +50,7 @@ export default function Main_Login_Form({ onNext }: Props) {
         <div className={`flex-none transition-opacity duration-1000 ${showButton ? "opacity-100" : "opacity-0"}`}>
           <PrimaryButton label="시작" onClick={onNext} />
         </div>
-        <div className="flex-[2] w-full" />
+        <div className="flex-[2.5] w-full" />
       </div>
     </div>
   );
