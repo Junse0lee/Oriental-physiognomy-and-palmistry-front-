@@ -124,8 +124,8 @@ export default function HandAnalysis({ onStartAnalysis, onBack, userHand }: Prop
 
       <canvas ref={canvasRef} className="hidden" />
 
-      <div className="w-full mt-auto mb-10 px-6">
-        <div className="flex justify-around items-center px-10">
+      <div className="w-full mt-auto mb-10">
+        <div className="flex justify-around items-center">
           <div className="flex flex-col items-center gap-2">
             <button
               onClick={capturedImage ? handleRetry : handleCapture}
