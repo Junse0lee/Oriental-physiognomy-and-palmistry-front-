@@ -111,8 +111,10 @@ export default function Home() {
 
         {scene === "CHOOSE" && (
           <Choose_Hand_Face
+            userName={userName} // ✅ 부모의 userName 상태 전달
             onHandNext={() => setScene("HAND_ANALYSIS")}
-            onNext={() => setScene("HAND_ANALYSIS")}
+            onFaceNext={() => setScene("HAND_ANALYSIS")} // 나중에 FACE 전용 씬이 생기면 수정하세요!
+            onMatchingNext={() => setScene("HAND_ANALYSIS")} // 나중에 MATCHING 전용 씬이 생기면 수정하세요!
           />
         )}
 

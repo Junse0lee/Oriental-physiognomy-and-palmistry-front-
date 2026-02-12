@@ -1,71 +1,94 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import { motion, AnimatePresence, PanInfo } from "framer-motion"; // ✅ PanInfo 추가
 
-// 1. Interface에 onHandNext를 추가하여 TypeScript에게 알려줍니다.
 interface Props {
-  onNext: () => void;     // 관상용
-  onHandNext: () => void; // 손금용
+  userName: string;
+  onFaceNext: () => void;
+  onHandNext: () => void;
+  onMatchingNext: () => void;
 }
 
-// 2. 함수 인자(Destructuring)에도 onHandNext를 추가합니다.
-export default function Choose_Hand_Face({ onNext, onHandNext }: Props) {
+// 카드 데이터의 구조를 정의합니다.
+interface CardData {
+  id: number;
+  title: string;
+  desc: string;
+  icon: string;
+  action: () => void;
+}
+
+export default function Choose_Hand_Face({ userName, onFaceNext, onHandNext, onMatchingNext }: Props) {
+  const [index, setIndex] = useState(0);
+
+  const cards: CardData[] = [
+    { id: 0, title: "천부적 관상", desc: "당신의 얼굴에 새겨진\n하늘의 뜻은?", icon: "👤", action: onFaceNext },
+    { id: 1, title: "손금의 비밀", desc: "운명의 선들이 그려내는\n당신의 내일", icon: "✋", action: onHandNext },
+    { id: 2, title: "운명적 궁합", desc: "서로의 기운이 만나는\n인연의 깊이는?", icon: "💖", action: onMatchingNext },
+  ];
+
+  const nextCard = () => setIndex((prev) => (prev + 1) % cards.length);
+  const prevCard = () => setIndex((prev) => (prev - 1 + cards.length) % cards.length);
+
+  // ✅ any 대신 MouseEvent/TouchEvent와 PanInfo 타입을 명시합니다.
+  const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    const swipeThreshold = 50;
+    if (info.offset.x < -swipeThreshold) {
+      nextCard();
+    } else if (info.offset.x > swipeThreshold) {
+      prevCard();
+    }
+  };
+
   return (
-    <div className="w-full flex flex-col items-center space-y-8 animate-in fade-in duration-700">
-      
-      {/* 1. 상단 아이콘 영역 */}
-      <div className="flex flex-col items-center">
-        <div className="w-20 h-20 mb-4 opacity-80">
-          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M50 20C30 20 10 40 10 50C10 60 30 80 50 80C70 80 90 60 90 50C90 40 70 20 50 20ZM50 70C38.95 70 30 61.05 30 50C30 38.95 38.95 30 50 30C61.05 30 70 38.95 70 50C70 61.05 61.05 70 50 70Z" fill="#E2C37B"/>
-            <circle cx="50" cy="50" r="10" fill="#E2C37B"/>
-          </svg>
-        </div>
-        <p className="text-[#E2C37B] text-lg font-medium tracking-tight">
-          당신의 운명을 읽어드립니다
-        </p>
+    <div className="w-full h-full flex flex-col items-center bg-white text-black overflow-hidden py-10">
+      <div className="text-center mb-10 flex-none">
+        <p className="text-gray-400">환영합니다.</p>
+        <h2 className="text-2xl font-bold border-b border-black pb-1 inline-block">
+          {userName || "USER"} 님
+        </h2>
       </div>
 
-      {/* 2. 카드 버튼 영역 (천부적 관상) */}
-      <button 
-        onClick={onNext}
-        className="w-full max-w-sm bg-[#25253D]/50 border border-white/5 p-6 rounded-[30px] flex items-center space-x-6 hover:bg-[#25253D] transition-all group active:scale-95"
-      >
-        <div className="w-24 h-24 flex-none grayscale group-hover:grayscale-0 transition-all">
-          <span className="text-5xl">👤</span>
-        </div>
-        <div className="text-left">
-          <h3 className="text-[#E2C37B] text-xl font-bold mb-1">천부적 관상</h3>
-          <p className="text-gray-400 text-sm leading-relaxed">
-            당신의 얼굴에 새겨진<br/>하늘의 뜻은?
-          </p>
-        </div>
-      </button>
+      <div className="flex-1 min-h-[20px]" />
 
-      {/* 3. 카드 버튼 영역 (손금의 비밀) */}
-      <button 
-        onClick={onHandNext} 
-        className="w-full max-w-sm bg-[#25253D]/50 border border-white/5 p-6 rounded-[30px] flex items-center space-x-6 hover:bg-[#25253D] transition-all group active:scale-95"
-      >
-        <div className="w-24 h-24 flex-none grayscale group-hover:grayscale-0 transition-all text-5xl flex items-center justify-center">
-          ✋
-        </div>
-        <div className="text-left">
-          <h3 className="text-[#E2C37B] text-xl font-bold mb-1">손금의 비밀</h3>
-          <p className="text-gray-400 text-sm leading-relaxed">
-            운명의 선들이 그려내는<br/>당신의 내일
-          </p>
-        </div>
-      </button>
+      <div className="relative w-full max-w-sm flex items-center justify-center px-4 flex-none touch-none">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={index}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            onDragEnd={handleDragEnd}
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -100 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={cards[index].action} // ✅ 카드 클릭 시 액션 실행
+            className="w-[280px] aspect-[3/4] bg-gray-50 border border-gray-200 rounded-[30px] shadow-lg flex flex-col items-center justify-between p-8 cursor-grab active:cursor-grabbing"
+          >
+            <div className="w-full py-3 bg-white rounded-xl text-center border border-gray-100 shadow-sm pointer-events-none">
+              <span className="font-bold text-lg">{cards[index].title}</span>
+            </div>
+            <div className="text-8xl my-4 pointer-events-none">{cards[index].icon}</div>
+            <div className="text-center pointer-events-none">
+              <p className="text-gray-500 text-sm leading-relaxed whitespace-pre-wrap">
+                {cards[index].desc}
+              </p>
+              <p className="mt-4 text-[10px] text-blue-400 font-bold animate-pulse">
+                카드 클릭 시 시작하기
+              </p>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
-      {/* 4. 하단 설명 문구 */}
-      <div className="pt-8 text-center space-y-1 opacity-60">
-        <p className="text-[11px] text-gray-300 font-light">
-          얼굴 비율을 이용한 동양 관상학을 이용했습니다.
-        </p>
-        <p className="text-[11px] text-gray-300 font-light">
-          손금 또한 기존 손금 보는 방식을 바탕으로 진행했습니다.
-        </p>
+      <div className="flex-[1.5] w-full flex flex-col items-center justify-center space-y-8">
+        <div className="flex space-x-2">
+          {cards.map((_, i) => (
+            <div key={i} className={`w-1.5 h-1.5 rounded-full ${index === i ? "w-4 bg-black" : "bg-gray-300"}`} />
+          ))}
+        </div>
+        <p className="text-[10px] text-gray-400">좌우로 밀어서 메뉴를 선택하세요</p>
       </div>
     </div>
   );
